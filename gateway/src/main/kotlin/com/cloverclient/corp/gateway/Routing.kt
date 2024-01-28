@@ -15,13 +15,13 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 fun Application.configureRouting()
 {
     routing {
-        authenticate("account") {
-            get("/health") {
-                call.respond(mapOf(
-                    "healthy" to "true"
-                ))
-            }
+        get("/health") {
+            call.respond(mapOf(
+                "healthy" to "true"
+            ))
+        }
 
+        authenticate("account") {
             webSocket("/start") {
                 try
                 {
