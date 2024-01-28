@@ -3,6 +3,7 @@ package com.cloverclient.corp.gateway
 import com.cloverclient.corp.gateway.models.Simple1
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
@@ -15,6 +16,12 @@ fun Application.configureRouting()
 {
     routing {
         authenticate("account") {
+            get("/health") {
+                call.respond(mapOf(
+                    "healthy" to "true"
+                ))
+            }
+
             webSocket("/start") {
                 try
                 {
