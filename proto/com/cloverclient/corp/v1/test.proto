@@ -1,0 +1,8 @@
+// buf:lint:ignore PACKAGE_DIRECTORY_MATCH
+package com.cloverclient.corp.v1;
+
+message Simple1 {
+  required string a_string = 1;
+  repeated string a_repeated_string = 2;
+  optional bool a_boolean = 3;
+}
