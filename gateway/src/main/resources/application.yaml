@@ -12,7 +12,7 @@ ktor:
 jwt:
   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Wft4FeT2"
   audience: "3v84totdkmfq7df6ld1aflbdjg"
-  realm: "clover-gateway-dev"
+  realm: "us-east-1_4Wft4FeT2"
 
 aws:
   region: "__local__"
