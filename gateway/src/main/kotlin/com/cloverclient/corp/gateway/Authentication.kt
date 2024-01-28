@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit
 fun Application.configureAuthentication()
 {
     val jwtAudience = environment.config.property("jwt.audience").getString()
-    val issuerUrl = environment.config.property("jwt.issuer-url").getString()
     val issuer = environment.config.property("jwt.issuer").getString()
     val realm = environment.config.property("jwt.realm").getString()
 
@@ -23,9 +22,9 @@ fun Application.configureAuthentication()
         .build()
 
     authentication {
-        jwt {
+        jwt("account") {
             this.realm = realm
-            verifier(jwkProvider, "$issuerUrl$issuer") {
+            verifier(jwkProvider, issuer) {
                 acceptLeeway(3)
             }
 

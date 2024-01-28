@@ -1,7 +1,9 @@
 package com.cloverclient.corp.gateway
 
+import com.google.protobuf.GeneratedMessageV3
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.ktor.server.websocket.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -22,3 +24,5 @@ fun Application.configureWebSockets()
         contentConverter = KotlinxWebsocketSerializationConverter(ProtoBuf)
     }
 }
+
+suspend fun ApplicationCall.respondProtoBuf(serializable: GeneratedMessageV3) = respondBytes(serializable.toByteArray())

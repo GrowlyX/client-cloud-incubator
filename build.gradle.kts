@@ -28,7 +28,7 @@ subprojects {
     apply(plugin = "application")
 
     dependencies {
-        compileOnly(kotlin("stdlib"))
+        api(kotlin("stdlib"))
         api("io.ktor:ktor-server-core")
         api("io.ktor:ktor-server-netty")
         api("io.ktor:ktor-server-config-yaml")
@@ -36,6 +36,8 @@ subprojects {
         api("io.ktor:ktor-serialization-kotlinx-protobuf")
         api("io.ktor:ktor-server-auth")
         api("io.ktor:ktor-server-auth-jwt")
+
+        api("ch.qos.logback:logback-classic:${rootProject.libs.versions.logback.orNull}")
 
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:${rootProject.libs.versions.serialization.orNull}")
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.libs.versions.coroutines.orNull}")

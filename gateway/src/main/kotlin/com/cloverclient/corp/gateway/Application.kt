@@ -14,4 +14,7 @@ fun Application.module()
     configureContentNegotiation()
     configureAuthentication()
     configureWebSockets()
+    configureRouting()
+
+    println("started application")
 }
