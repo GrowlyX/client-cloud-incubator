@@ -6,9 +6,13 @@ ktor:
       - classes
   application:
     modules:
-      - com.cloverclient.corp.gateway.ApplicationKt.module
+      - com.cloverclient.corp.core.CoreKt.coreModule
+      - com.cloverclient.corp.gateway.GatewayKt.gatewayModule
 
 jwt:
   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Wft4FeT2"
   audience: "3v84totdkmfq7df6ld1aflbdjg"
   realm: "clover-gateway-dev"
+
+aws:
+  region: "__local__"

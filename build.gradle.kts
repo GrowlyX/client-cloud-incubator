@@ -17,13 +17,13 @@ allprojects {
     version = "1.0-SNAPSHOT"
 
     repositories {
-        bufBuild()
         mavenCentral()
     }
 }
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
     apply(plugin = "io.ktor.plugin")
     apply(plugin = "application")
 
@@ -33,7 +33,7 @@ subprojects {
         api("io.ktor:ktor-server-netty")
         api("io.ktor:ktor-server-config-yaml")
         api("io.ktor:ktor-server-content-negotiation")
-        api("io.ktor:ktor-serialization-kotlinx-protobuf")
+        api("io.ktor:ktor-serialization-kotlinx-json")
         api("io.ktor:ktor-server-auth")
         api("io.ktor:ktor-server-auth-jwt")
 
@@ -45,6 +45,11 @@ subprojects {
         api("aws.sdk.kotlin:kinesis:${awsSDKVersion()}")
         api("aws.sdk.kotlin:elasticache:${awsSDKVersion()}")
         api("aws.sdk.kotlin:dynamodb:${awsSDKVersion()}")
+
+        testApi("io.ktor:ktor-server-test-host-jvm")
+        testApi("io.ktor:ktor-client-content-negotiation")
+        testApi("io.ktor:ktor-serialization-kotlinx-json")
+        testApi("org.jetbrains.kotlin:kotlin-test-junit")
     }
 
     kotlin {
@@ -70,20 +75,3 @@ subprojects {
 }
 
 fun Project.awsSDKVersion() = rootProject.libs.versions.aws.kotlin.sdk.orNull
-
-fun RepositoryHandler.bufBuild()
-{
-    maven {
-        name = "cloverBuf"
-        url = uri("https://buf.build/gen/maven")
-
-        credentials(HttpHeaderCredentials::class)
-        authentication {
-            create<HttpHeaderAuthentication>("header")
-        }
-
-        content {
-            includeGroup("build.buf.gen")
-        }
-    }
-}

@@ -1,8 +1,11 @@
 package com.cloverclient.corp.gateway
 
-import build.buf.gen.com.cloverclient.corp.v1.Simple1
+import com.cloverclient.corp.gateway.models.Simple1
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 
 /**
  * @author GrowlyX
@@ -11,14 +14,28 @@ import io.ktor.server.routing.*
 fun Application.configureRouting()
 {
     routing {
-        get("/testing") {
-            call.respondProtoBuf(
-                Simple1
-                    .newBuilder()
-                    .setAString("hors")
-                    .addARepeatedString("hors1")
-                    .build()
-            )
+        authenticate("account") {
+            webSocket("/start") {
+                try
+                {
+                    while (true)
+                    {
+                        val simple1 = receiveDeserialized<Simple1>()
+                        println("Simple 1: ${simple1.testMessage}")
+
+                        sendSerialized(Simple1(
+                            testMessage = "response"
+                        ))
+                    }
+                } catch (ignored: ClosedReceiveChannelException)
+                {
+                    println("onClose ${closeReason.await()}")
+                } catch (e: Throwable)
+                {
+                    println("onError ${closeReason.await()}")
+                    e.printStackTrace()
+                }
+            }
         }
     }
 }

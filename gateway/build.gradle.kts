@@ -3,8 +3,9 @@ application {
 }
 
 dependencies {
+    api(project(":core"))
     api("io.ktor:ktor-server-websockets")
-    api("build.buf.gen:cloverclient_gateway_protocolbuffers_kotlin:${rootProject.libs.versions.protobufs.gateway.orNull}")
+    implementation("io.ktor:ktor-client-cio-jvm:2.3.7")
 }
 
 ktor {

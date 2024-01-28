@@ -1,4 +1,4 @@
-package com.cloverclient.corp.gateway
+package com.cloverclient.corp.core
 
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.server.application.*
