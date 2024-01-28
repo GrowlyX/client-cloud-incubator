@@ -1,0 +1,12 @@
+ktor:
+  deployment:
+    port: 8080
+  application:
+    modules:
+      - com.cloverclient.corp.gateway.ApplicationKt
+
+jwt:
+  issuer: "<user pool ID>"
+  issuer-url: "https://cognito-idp.us-east-1.amazonaws.com/"
+  audience: "<user pool client ID>"
+  realm: "clover-gateway-$ENV"

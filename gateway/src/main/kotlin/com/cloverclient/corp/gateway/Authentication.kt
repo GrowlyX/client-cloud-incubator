@@ -1,0 +1,39 @@
+package com.cloverclient.corp.gateway
+
+import com.auth0.jwk.JwkProviderBuilder
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import java.util.concurrent.TimeUnit
+
+/**
+ * @author GrowlyX
+ * @since 1/28/2024
+ */
+fun Application.configureAuthentication()
+{
+    val jwtAudience = environment.config.property("jwt.audience").getString()
+    val issuerUrl = environment.config.property("jwt.issuer-url").getString()
+    val issuer = environment.config.property("jwt.issuer").getString()
+    val realm = environment.config.property("jwt.realm").getString()
+
+    val jwkProvider = JwkProviderBuilder(issuer)
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
+
+    authentication {
+        jwt {
+            this.realm = realm
+            verifier(jwkProvider, "$issuerUrl$issuer") {
+                acceptLeeway(3)
+            }
+
+            validate { credential ->
+                if (credential.payload.audience.contains(jwtAudience))
+                    JWTPrincipal(credential.payload)
+                else null
+            }
+        }
+    }
+}
