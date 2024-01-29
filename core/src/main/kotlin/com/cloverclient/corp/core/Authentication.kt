@@ -1,6 +1,7 @@
 package com.cloverclient.corp.core
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.cloverclient.corp.core.utilities.AuthenticationAuthHeaderExtractUtilities
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -24,8 +25,17 @@ fun Application.configureAuthentication()
     authentication {
         jwt("account") {
             this.realm = realm
+
             verifier(jwkProvider, issuer) {
                 acceptLeeway(3)
+            }
+
+            authHeader { call ->
+                val jwtToken = call.request.headers["X-AMZN-OIDC-DATA"]
+                    ?: return@authHeader null
+
+                AuthenticationAuthHeaderExtractUtilities.INSTANCE
+                    .extractAuthHeaderFrom(jwtToken)
             }
 
             validate { credential ->
