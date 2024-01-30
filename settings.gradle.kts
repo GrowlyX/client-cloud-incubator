@@ -3,4 +3,4 @@ plugins {
 }
 
 rootProject.name = "cloverclient-services-monorepo"
-include("gateway", "core")
+include("gateway", "core", "profiles")

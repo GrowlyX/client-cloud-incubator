@@ -1,10 +1,9 @@
 application {
-    mainClass.set("com.cloverclient.corp.gateway.ApplicationKt")
+    mainClass.set("com.cloverclient.corp.profiles.ApplicationKt")
 }
 
 dependencies {
     api(project(":core"))
-    api("io.ktor:ktor-server-websockets")
 }
 
 ktor {
