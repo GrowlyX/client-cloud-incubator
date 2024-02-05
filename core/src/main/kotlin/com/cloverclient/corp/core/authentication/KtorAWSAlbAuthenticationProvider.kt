@@ -11,12 +11,13 @@ import io.ktor.server.response.*
  */
 const val AmznOidcAuthHeader = "X-Amzn-Oidc-Data"
 
-class KtorAWSAlbAuthenticationProvider(
+class KtorAWSAlbAuthenticationProvider<T : AWSAlbPrincipal>(
     name: String,
     private val realm: String,
     private val tokenValidator: AWSAlbUserClaimsTokenValidator,
     private val audience: String,
-    private val issuer: String
+    private val issuer: String,
+    private val buildUserPrincipal: (AWSAlbPrincipal) -> T
 ) : AuthenticationProvider(object : Config(name){})
 {
     override suspend fun onAuthenticate(context: AuthenticationContext)
@@ -48,7 +49,7 @@ class KtorAWSAlbAuthenticationProvider(
 
         context.principal(
             name,
-            AWSAlbPrincipal(claims = validateTokensFor.body)
+            buildUserPrincipal(AWSAlbPrincipal(claims = validateTokensFor.body))
         )
     }
 }

@@ -1,5 +1,7 @@
 package com.cloverclient.corp.gateway
 
+import com.cloverclient.corp.core.idp.IdpUser
+import com.cloverclient.corp.core.idp.idpUser
 import com.cloverclient.corp.gateway.models.Simple1
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -23,10 +25,13 @@ fun Application.configureRouting()
 
         authenticate("account") {
             get("/authentication-test") {
-                call.respond("it works!!")
+                val principal = call.idpUser()
+                call.respond("it works!! hi ${principal["email"]}")
             }
 
             webSocket("/start") {
+                val principal = call.idpUser()
+
                 try
                 {
                     while (true)
@@ -35,7 +40,7 @@ fun Application.configureRouting()
                         println("Simple 1: ${simple1.testMessage}")
 
                         sendSerialized(Simple1(
-                            testMessage = "response"
+                            testMessage = "hi ${principal["email"]}"
                         ))
                     }
                 } catch (ignored: ClosedReceiveChannelException)

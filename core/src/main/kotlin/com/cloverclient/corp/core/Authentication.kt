@@ -1,6 +1,7 @@
 package com.cloverclient.corp.core
 
 import com.cloverclient.corp.core.authentication.KtorAWSAlbAuthenticationProvider
+import com.cloverclient.corp.core.idp.IdpUser
 import com.rbinternational.awstools.awsjwtvalidator.AWSAlbUserClaimsTokenValidator
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -23,6 +24,8 @@ fun Application.configureAuthentication()
             tokenValidator = tokenValidator,
             audience = jwtAudience,
             issuer = issuer
-        ))
+        ) {
+            IdpUser(it)
+        })
     }
 }
