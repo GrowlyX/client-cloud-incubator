@@ -11,7 +11,7 @@ ktor:
 
 jwt:
   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Wft4FeT2"
-  audience: "3v84totdkmfq7df6ld1aflbdjg"
+  audience: "63208gfven5ue041luetq6sh6m"
   realm: "us-east-1_4Wft4FeT2"
 
 aws:

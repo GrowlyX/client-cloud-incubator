@@ -22,6 +22,10 @@ fun Application.configureRouting()
         }
 
         authenticate("account") {
+            get("/authentication-test") {
+                call.respond("it works!!")
+            }
+
             webSocket("/start") {
                 try
                 {
