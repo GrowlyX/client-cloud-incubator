@@ -1,14 +1,18 @@
 package com.cloverclient.corp.gateway
 
-import com.cloverclient.corp.core.inject.getAllServices
 import com.cloverclient.corp.core.inject.serviceLocator
 import com.cloverclient.corp.gateway.websocket.Listener
 import com.cloverclient.corp.gateway.websocket.Mapped
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
 import io.ktor.server.websocket.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToStream
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.time.Duration
+import java.util.*
 
 /**
  * @author GrowlyX
@@ -31,4 +35,31 @@ fun Application.configureWebSockets()
         masking = false
         contentConverter = KotlinxWebsocketSerializationConverter(Json)
     }
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+fun constructWebSocketResponse(mappingCode: Int, messageId: UUID, data: Any): ByteArray
+{
+    val messageIdBytes = ByteBuffer
+        .allocate(16)
+        .apply {
+            putLong(messageId.mostSignificantBits)
+            putLong(messageId.leastSignificantBits)
+        }
+        .array()
+
+    val mappingCodeBytes = byteArrayOf(mappingCode.toByte())
+
+    val dataOutputStream = ByteArrayOutputStream()
+    Json.encodeToStream(data, dataOutputStream)
+    val dataOutputBytes = dataOutputStream.toByteArray()
+
+    return ByteBuffer
+        .allocate(mappingCodeBytes.size + messageIdBytes.size + dataOutputBytes.size)
+        .apply {
+            put(mappingCodeBytes)
+            put(messageIdBytes)
+            put(dataOutputBytes)
+        }
+        .array()
 }

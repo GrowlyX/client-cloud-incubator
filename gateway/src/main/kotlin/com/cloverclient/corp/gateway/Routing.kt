@@ -3,8 +3,8 @@ package com.cloverclient.corp.gateway
 import com.cloverclient.corp.core.idp.idpUser
 import com.cloverclient.corp.core.inject.getAllServices
 import com.cloverclient.corp.core.inject.serviceLocator
-import com.cloverclient.corp.gateway.models.Simple1
 import com.cloverclient.corp.gateway.websocket.WebSocketContext
+import com.cloverclient.corp.gateway.websocket.WebSocketError
 import com.cloverclient.corp.gateway.websocket.lifecycle.ClientLifecycleListener
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -12,15 +12,25 @@ import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
+import kotlinx.serialization.serializer
+import java.nio.ByteBuffer
 import java.util.*
 
 /**
  * @author GrowlyX
  * @since 1/28/2024
  */
+@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
 fun Application.configureRouting()
 {
+    val logger = log
     routing {
         get("/health") {
             call.respondText("OK", status = HttpStatusCode.OK)
@@ -45,16 +55,60 @@ fun Application.configureRouting()
 
                 try
                 {
-                    while (true)
-                    {
-                        val receiveBytes = receiveDeserialized<>()
+                    incoming.consumeEach {
+                        val bytes = it.readBytes()
+                        val code = bytes.firstOrNull()?.toInt()
 
-                        val simple1 = receiveDeserialized<Simple1>()
-                        println("Simple 1: ${simple1.testMessage}")
+                        if (code == null || it !is Frame.Binary) {
+                            send(
+                                constructWebSocketResponse(
+                                    0x0, UUID.randomUUID(),
+                                    WebSocketError("Invalid listener mapping")
+                                )
+                            )
+                            return@consumeEach
+                        }
 
-                        sendSerialized(Simple1(
-                            testMessage = "hi ${principal["email"]}"
-                        ))
+                        val messageIdBytes = bytes.copyOfRange(1, 17)
+                        val messageId = ByteBuffer.wrap(messageIdBytes)
+                            .let { byteBuffer ->
+                                UUID(byteBuffer.long, byteBuffer.long)
+                            }
+
+                        val mapping = websocketListeners[code]
+                            ?: return@consumeEach run {
+                                send(
+                                    constructWebSocketResponse(
+                                        0x0, messageId,
+                                        WebSocketError("Invalid listener mapping")
+                                    )
+                                )
+                            }
+
+                        val jsonByteData = bytes.drop(17).toByteArray().inputStream()
+                        val jsonData = Json.decodeFromStream(
+                            mapping.typeParameters.first.serializer(),
+                            jsonByteData
+                        )
+
+                        val response = mapping.handleTypeCasted(session, jsonData)
+                        if (response.isFailure())
+                        {
+                            send(
+                                constructWebSocketResponse(
+                                    0x0, messageId,
+                                    WebSocketError("Internal server error")
+                                )
+                            )
+                            return@consumeEach
+                        }
+
+                        send(
+                            constructWebSocketResponse(
+                                code, messageId,
+                                response.data
+                            )
+                        )
                     }
                 } catch (ignored: ClosedReceiveChannelException)
                 {
@@ -62,9 +116,7 @@ fun Application.configureRouting()
                 } catch (exception: Throwable)
                 {
                     lifecycleListeners.forEach { it.error(session) }
-
-                    println("onError ${closeReason.await()}")
-                    exception.printStackTrace()
+                    logger.error("WebSocket error", exception)
                 }
             }
         }
