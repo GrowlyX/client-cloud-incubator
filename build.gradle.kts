@@ -4,6 +4,7 @@ plugins {
     java
     application
     kotlin("jvm") version libs.versions.kotlin
+    kotlin("kapt") version libs.versions.kotlin
     kotlin("plugin.serialization") version libs.versions.kotlin
     id("org.ajoberstar.grgit") version libs.versions.grgit
     id("io.ktor.plugin") version libs.versions.ktor
@@ -23,12 +24,15 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
     apply(plugin = "io.ktor.plugin")
     apply(plugin = "application")
 
     dependencies {
+        kapt("org.glassfish.hk2:hk2-metadata-generator:${rootProject.libs.versions.hk2.orNull}")
         api(kotlin("stdlib"))
+
         api("io.ktor:ktor-server-core")
         api("io.ktor:ktor-server-netty")
         api("io.ktor:ktor-server-config-yaml")
@@ -50,6 +54,10 @@ subprojects {
         testApi("io.ktor:ktor-client-content-negotiation")
         testApi("io.ktor:ktor-serialization-kotlinx-json")
         testApi("org.jetbrains.kotlin:kotlin-test-junit")
+    }
+
+    kapt {
+        keepJavacAnnotationProcessors = true
     }
 
     kotlin {

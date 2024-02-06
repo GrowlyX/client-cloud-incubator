@@ -10,7 +10,7 @@ import io.ktor.server.auth.*
  */
 class IdpUser(principal: AWSAlbPrincipal) : AWSAlbPrincipal(principal)
 {
-
+    val email = principal["email"]!!
 }
 
 fun ApplicationCall.idpUser() = principal<IdpUser>()!!

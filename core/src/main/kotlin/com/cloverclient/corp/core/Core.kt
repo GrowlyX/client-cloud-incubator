@@ -1,5 +1,6 @@
 package com.cloverclient.corp.core
 
+import com.cloverclient.corp.core.inject.configureInject
 import io.ktor.server.application.*
 
 /**
@@ -8,6 +9,7 @@ import io.ktor.server.application.*
  */
 fun Application.coreModule()
 {
+    configureInject()
     configureContentNegotiation()
     configureAuthentication()
 }
