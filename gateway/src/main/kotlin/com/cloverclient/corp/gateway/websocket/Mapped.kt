@@ -8,7 +8,7 @@ import javax.inject.Qualifier
  * @since 2/5/2024
  */
 @Qualifier
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.CLASS)
 annotation class Mapped(
     @get:Metadata("code")
     val value: Int

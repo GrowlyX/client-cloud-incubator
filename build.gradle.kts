@@ -11,7 +11,6 @@ plugins {
 }
 
 var currentBranch: String = grgit.branch.current().name
-val awsKotlinSDKVersion =
 
 allprojects {
     group = "com.cloverclient.corp.services"
@@ -27,7 +26,6 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.kapt")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
     apply(plugin = "io.ktor.plugin")
-    apply(plugin = "application")
 
     dependencies {
         kapt("org.glassfish.hk2:hk2-metadata-generator:${rootProject.libs.versions.hk2.orNull}")
@@ -47,8 +45,8 @@ subprojects {
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.libs.versions.coroutines.orNull}")
 
         api("aws.sdk.kotlin:kinesis:${awsSDKVersion()}")
-        api("aws.sdk.kotlin:elasticache:${awsSDKVersion()}")
-        api("aws.sdk.kotlin:dynamodb:${awsSDKVersion()}")
+        api("software.amazon.awssdk:dynamodb:${awsJavaSDKVersion()}")
+        api("software.amazon.awssdk:dynamodb-enhanced:${awsJavaSDKVersion()}")
 
         testApi("io.ktor:ktor-server-test-host-jvm")
         testApi("io.ktor:ktor-client-content-negotiation")
@@ -62,10 +60,6 @@ subprojects {
 
     kotlin {
         jvmToolchain(17)
-    }
-
-    application {
-        applicationDefaultJvmArgs = listOf("-Dio.ktor.development=true")
     }
 
     tasks {
@@ -83,3 +77,4 @@ subprojects {
 }
 
 fun Project.awsSDKVersion() = rootProject.libs.versions.aws.kotlin.sdk.orNull
+fun Project.awsJavaSDKVersion() = rootProject.libs.versions.aws.java.sdk.orNull

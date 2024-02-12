@@ -1,4 +1,4 @@
-package com.cloverclient.corp.core
+package com.cloverclient.corp.core.serialization
 
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

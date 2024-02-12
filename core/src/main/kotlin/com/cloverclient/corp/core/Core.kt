@@ -1,6 +1,7 @@
 package com.cloverclient.corp.core
 
 import com.cloverclient.corp.core.inject.configureInject
+import com.cloverclient.corp.core.serialization.configureContentNegotiation
 import io.ktor.server.application.*
 
 /**

@@ -1,7 +1,8 @@
 package com.cloverclient.corp.gateway.websocket.listeners
 
+import com.cloverclient.corp.gateway.protocol.test.TestRequest
+import com.cloverclient.corp.gateway.protocol.test.TestResponse
 import com.cloverclient.corp.gateway.websocket.*
-import kotlinx.serialization.Serializable
 import org.jvnet.hk2.annotations.Service
 
 /**
@@ -9,16 +10,11 @@ import org.jvnet.hk2.annotations.Service
  * @since 2/5/2024
  */
 @Service
-class TestListener : Listener<TestListener.Data, TestListener.TestResult>
+@Mapped(0x1)
+class TestListener : Listener<TestRequest, TestResponse>
 {
-    @Serializable
-    data class Data(val message: String)
-
-    @Serializable
-    data class TestResult(val value: String)
-
-    override val typeParameters = Data::class to TestResult::class
-    override suspend fun handle(context: WebSocketContext, data: Data): Result<TestResult>
+    override val typeParameters = TestRequest::class to TestResponse::class
+    override suspend fun handle(context: WebSocketContext, data: TestRequest): Result<TestResponse>
     {
         if (data.message == "hors")
         {
@@ -26,6 +22,6 @@ class TestListener : Listener<TestListener.Data, TestListener.TestResult>
                 .failedResultOf()
         }
 
-        return TestResult(value = "test").resultOf()
+        return TestResponse(value = "test").resultOf()
     }
 }

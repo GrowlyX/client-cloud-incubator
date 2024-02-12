@@ -1,5 +1,6 @@
 [versions]
 aws_kotlin_sdk = "1.0.44"
+aws_java_sdk = "2.24.0"
 ktor = "2.3.7"
 grgit = "4.1.1"
 kotlin = "1.9.21"

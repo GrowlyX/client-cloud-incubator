@@ -1,8 +1,8 @@
 package com.cloverclient.corp.core.services
 
-import aws.sdk.kotlin.runtime.auth.credentials.EnvironmentCredentialsProvider
-import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
-import kotlin.time.Duration.Companion.seconds
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
 /**
  * @author GrowlyX
@@ -10,23 +10,17 @@ import kotlin.time.Duration.Companion.seconds
  */
 object Database
 {
-    private lateinit var dynamoDbClient: DynamoDbClient
+    private lateinit var dynamoDbClient: DynamoDbEnhancedClient
 
     fun client() = dynamoDbClient
     fun configureDynamoClient(region: String)
     {
-        dynamoDbClient = DynamoDbClient {
-            this.region = region
-            credentialsProvider = EnvironmentCredentialsProvider()
+        val client = DynamoDbClient.builder()
+            .region(Region.of(region))
+            .build()
 
-            httpClient {
-                maxConcurrency = 64u
-                connectTimeout = 10.seconds
-            }
-
-            retryStrategy {
-                maxAttempts = 2
-            }
-        }
+        dynamoDbClient = DynamoDbEnhancedClient.builder()
+            .dynamoDbClient(client)
+            .build()
     }
 }

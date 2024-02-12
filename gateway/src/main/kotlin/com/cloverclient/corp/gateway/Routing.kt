@@ -3,6 +3,7 @@ package com.cloverclient.corp.gateway
 import com.cloverclient.corp.core.idp.idpUser
 import com.cloverclient.corp.core.inject.getAllServices
 import com.cloverclient.corp.core.inject.serviceLocator
+import com.cloverclient.corp.gateway.protocol.constructWebSocketReqResp
 import com.cloverclient.corp.gateway.websocket.WebSocketContext
 import com.cloverclient.corp.gateway.websocket.WebSocketError
 import com.cloverclient.corp.gateway.websocket.lifecycle.ClientLifecycleListener
@@ -17,6 +18,7 @@ import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.serializer
@@ -59,9 +61,10 @@ fun Application.configureRouting()
                         val bytes = it.readBytes()
                         val code = bytes.firstOrNull()?.toInt()
 
-                        if (code == null || it !is Frame.Binary) {
+                        if (code == null || it !is Frame.Binary)
+                        {
                             send(
-                                constructWebSocketResponse(
+                                constructWebSocketReqResp(
                                     0x0, UUID.randomUUID(),
                                     WebSocketError("Invalid listener mapping")
                                 )
@@ -78,7 +81,7 @@ fun Application.configureRouting()
                         val mapping = websocketListeners[code]
                             ?: return@consumeEach run {
                                 send(
-                                    constructWebSocketResponse(
+                                    constructWebSocketReqResp(
                                         0x0, messageId,
                                         WebSocketError("Invalid listener mapping")
                                     )
@@ -86,16 +89,28 @@ fun Application.configureRouting()
                             }
 
                         val jsonByteData = bytes.drop(17).toByteArray().inputStream()
-                        val jsonData = Json.decodeFromStream(
-                            mapping.typeParameters.first.serializer(),
-                            jsonByteData
-                        )
+                        val jsonData = kotlin
+                            .runCatching {
+                                Json.decodeFromStream(
+                                    mapping.typeParameters.first.serializer(),
+                                    jsonByteData
+                                )
+                            }
+                            .getOrNull()
+                            ?: return@consumeEach run {
+                                send(
+                                    constructWebSocketReqResp(
+                                        0x0, messageId,
+                                        WebSocketError("Bad construction of JSON data")
+                                    )
+                                )
+                            }
 
                         val response = mapping.handleTypeCasted(session, jsonData)
                         if (response.isFailure())
                         {
                             send(
-                                constructWebSocketResponse(
+                                constructWebSocketReqResp(
                                     0x0, messageId,
                                     WebSocketError("Internal server error")
                                 )
@@ -104,9 +119,10 @@ fun Application.configureRouting()
                         }
 
                         send(
-                            constructWebSocketResponse(
+                            constructWebSocketReqResp(
                                 code, messageId,
-                                response.data
+                                response.data!!,
+                                mapping.typeParameters.second.serializer()
                             )
                         )
                     }
