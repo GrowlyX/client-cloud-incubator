@@ -1,6 +1,5 @@
 package com.cloverclient.corp.core
 
-import com.cloverclient.corp.core.services.Cache
 import com.cloverclient.corp.core.services.Database
 import io.ktor.server.application.*
 
@@ -14,6 +13,5 @@ fun Application.configureAWS()
     if (region != "__local__")
     {
         Database.configureDynamoClient(region)
-        Cache.configureElastiCacheClient(region)
     }
 }

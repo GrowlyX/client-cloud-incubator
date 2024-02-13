@@ -1,8 +1,8 @@
 package com.cloverclient.corp.core.services
 
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 
 /**
  * @author GrowlyX
@@ -10,16 +10,16 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
  */
 object Database
 {
-    private lateinit var dynamoDbClient: DynamoDbEnhancedClient
+    private lateinit var dynamoDbClient: DynamoDbEnhancedAsyncClient
 
     fun client() = dynamoDbClient
     fun configureDynamoClient(region: String)
     {
-        val client = DynamoDbClient.builder()
+        val client = DynamoDbAsyncClient.builder()
             .region(Region.of(region))
             .build()
 
-        dynamoDbClient = DynamoDbEnhancedClient.builder()
+        dynamoDbClient = DynamoDbEnhancedAsyncClient.builder()
             .dynamoDbClient(client)
             .build()
     }
