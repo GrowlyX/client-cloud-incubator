@@ -7,7 +7,7 @@ import io.ktor.server.application.*
  * @author GrowlyX
  * @since 1/28/2024
  */
-fun Application.configureAWS()
+fun Application.configureCloudServices()
 {
     val region = environment.config.property("aws.region").getString()
     if (region != "__local__")

@@ -1,5 +1,6 @@
 package com.cloverclient.corp.core.services
 
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
@@ -17,6 +18,7 @@ object Database
     {
         val client = DynamoDbAsyncClient.builder()
             .region(Region.of(region))
+            .credentialsProvider(InstanceProfileCredentialsProvider.create())
             .build()
 
         dynamoDbClient = DynamoDbEnhancedAsyncClient.builder()

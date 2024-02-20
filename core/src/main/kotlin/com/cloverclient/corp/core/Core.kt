@@ -13,4 +13,5 @@ fun Application.coreModule()
     configureInject()
     configureContentNegotiation()
     configureAuthentication()
+    configureCloudServices()
 }

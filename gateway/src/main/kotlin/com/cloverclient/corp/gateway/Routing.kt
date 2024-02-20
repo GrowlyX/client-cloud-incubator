@@ -3,6 +3,7 @@ package com.cloverclient.corp.gateway
 import com.cloverclient.corp.core.idp.idpUser
 import com.cloverclient.corp.core.inject.getAllServices
 import com.cloverclient.corp.core.inject.serviceLocator
+import com.cloverclient.corp.core.serialization.json
 import com.cloverclient.corp.gateway.protocol.constructWebSocketReqResp
 import com.cloverclient.corp.gateway.websocket.WebSocketContext
 import com.cloverclient.corp.gateway.websocket.WebSocketError
@@ -91,7 +92,7 @@ fun Application.configureRouting()
                         val jsonByteData = bytes.drop(17).toByteArray().inputStream()
                         val jsonData = kotlin
                             .runCatching {
-                                Json.decodeFromStream(
+                                json.decodeFromStream(
                                     mapping.typeParameters.first.serializer(),
                                     jsonByteData
                                 )

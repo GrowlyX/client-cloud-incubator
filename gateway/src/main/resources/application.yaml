@@ -7,7 +7,8 @@ ktor:
   application:
     modules:
       - com.cloverclient.corp.core.CoreKt.coreModule
-      - com.cloverclient.corp.gateway.GatewayKt.gatewayModule
+      - com.cloverclient.corp.gateway.ModuleKt.gatewayModule
+      - com.cloverclient.corp.gateway.profiles.ModuleKt.profilesModule
 
 jwt:
   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Wft4FeT2"
@@ -15,4 +16,7 @@ jwt:
   realm: "us-east-1_4Wft4FeT2"
 
 aws:
-  region: "__local__"
+  dynamodb:
+    tables:
+      profiles: "cloverclient-dev-profiles"
+  region: "us-east-1"

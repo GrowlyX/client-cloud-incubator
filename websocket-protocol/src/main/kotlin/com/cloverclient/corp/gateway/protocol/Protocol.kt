@@ -1,5 +1,6 @@
 package com.cloverclient.corp.gateway.protocol
 
+import com.cloverclient.corp.core.serialization.json
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -29,7 +30,7 @@ fun <T : Any> constructWebSocketReqResp(
 
 
     val dataOutputStream = ByteArrayOutputStream()
-    Json.encodeToStream(serializer as KSerializer<T>, data, dataOutputStream)
+    json.encodeToStream(serializer as KSerializer<T>, data, dataOutputStream)
     val dataOutputBytes = dataOutputStream.toByteArray()
 
     return ByteBuffer
@@ -69,7 +70,7 @@ inline fun <reified T : Any> deconstructWebSocketResponse(
         .toByteArray().inputStream()
 
     val jsonData = runCatching {
-        Json.decodeFromStream(customSerializerClass.serializer(), jsonByteData)
+        json.decodeFromStream(customSerializerClass.serializer(), jsonByteData)
     }.getOrNull()
         ?: throw IllegalStateException(
             "Websocket response contains malformed json data"
