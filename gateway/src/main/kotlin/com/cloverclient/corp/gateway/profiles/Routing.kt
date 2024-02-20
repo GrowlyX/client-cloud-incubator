@@ -1,5 +1,7 @@
 package com.cloverclient.corp.gateway.profiles
 
+import com.cloverclient.corp.core.services.convertToDocument
+import com.cloverclient.corp.core.services.convertToModel
 import com.cloverclient.corp.gateway.protocol.profiles.Profile
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -18,9 +20,11 @@ fun Application.configureProfilesRouting()
         route("/api/profiles/") {
             get("/test") {
                 val profileId = UUID.randomUUID()
+                val profile = Profile(profileId, username = "testing")
+
                 profilesTable()
                     .putItem(
-                        Profile(profileId, "testing")
+                        profile.convertToDocument<Profile>()
                     )
                     .thenAccept {
                         applicationLog.info("Inserted a testing profile with ID $profileId")
@@ -33,9 +37,10 @@ fun Application.configureProfilesRouting()
                             .partitionValue(profileId.toString())
                             .build()
                     )
+                    .convertToModel<Profile>()
                     .join()
 
-                call.respond(getItemResponse)
+                call.respond(getItemResponse ?: mapOf("error" to "did not properly convert"))
             }
         }
     }

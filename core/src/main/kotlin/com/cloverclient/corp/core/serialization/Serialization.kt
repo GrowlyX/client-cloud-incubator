@@ -4,6 +4,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.util.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -19,11 +20,14 @@ import java.util.*
  * @author GrowlyX
  * @since 1/28/2024
  */
+@OptIn(ExperimentalSerializationApi::class)
 val json = Json {
     serializersModule = SerializersModule {
         contextual(UUID::class, UUIDSerializer)
         contextual(Instant::class, InstantSerializer)
     }
+    encodeDefaults = true
+    decodeEnumsCaseInsensitive = true
 }
 
 fun Application.configureContentNegotiation()
