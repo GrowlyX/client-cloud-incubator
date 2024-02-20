@@ -2,7 +2,6 @@ package com.cloverclient.corp.gateway.protocol
 
 import com.cloverclient.corp.core.serialization.json
 import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.json.encodeToStream
 import java.io.ByteArrayOutputStream

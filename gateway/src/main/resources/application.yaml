@@ -1,5 +1,5 @@
 ktor:
-  development: true
+  development: false
   deployment:
     port: 8080
     watch:
@@ -9,6 +9,7 @@ ktor:
       - com.cloverclient.corp.core.CoreKt.coreModule
       - com.cloverclient.corp.gateway.ModuleKt.gatewayModule
       - com.cloverclient.corp.gateway.profiles.ModuleKt.profilesModule
+      - com.cloverclient.corp.gateway.friendships.ModuleKt.friendshipsModule
 
 jwt:
   issuer: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Wft4FeT2"
@@ -19,4 +20,5 @@ aws:
   dynamodb:
     tables:
       profiles: "cloverclient-dev-profiles"
+      friendships: "cloverclient-dev-friendships"
   region: "us-east-1"

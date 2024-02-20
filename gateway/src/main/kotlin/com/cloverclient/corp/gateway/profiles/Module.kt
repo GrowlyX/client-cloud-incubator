@@ -9,5 +9,4 @@ import io.ktor.server.application.*
 fun Application.profilesModule()
 {
     configureProfilesDatabase()
-    configureProfilesRouting()
 }
